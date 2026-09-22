@@ -93,11 +93,7 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>カテゴリ</Text>
           <View style={styles.categoryGrid}>
             {categories.map((cat) => (
-              <TouchableOpacity
-                key={cat.id}
-                style={styles.categoryItem}
-                onPress={() => handleCategoryPress(cat.id)}
-              >
+              <TouchableOpacity key={cat.id} style={styles.categoryItem} onPress={() => handleCategoryPress(cat.id)}>
                 <View style={styles.categoryCircle}>
                   <Ionicons name={cat.icon as any} size={24} color="#5C4A3F" />
                 </View>
@@ -112,11 +108,7 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>人気のはざい</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
             {MOCK_PRODUCTS.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.productCard}
-                onPress={() => handleProductPress(item.id)}
-              >
+              <TouchableOpacity key={item.id} style={styles.productCard} onPress={() => handleProductPress(item.id)}>
                 <Image source={{ uri: item.imageUrl }} style={styles.productImage} />
                 <Text style={styles.productCardTitle} numberOfLines={2}>
                   {item.title}

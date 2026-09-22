@@ -1,17 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  Dimensions,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  Share,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, Image, SafeAreaView, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // 商品データのモック（IDごとの表示用）
 const MOCK_DETAILS: Record<
@@ -33,10 +23,7 @@ const MOCK_DETAILS: Record<
     condition: "未使用",
     story: "家具製作の過程で出た高品質なオーク材の端材です。サイズは不揃いですが、小物作りやDIYに最適です。",
     seller: "木工工房 タナカ",
-    images: [
-      "https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-    ],
+    images: ["https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"],
   },
   "2": {
     title: "アクリル板 端材詰め合わせ",
@@ -45,10 +32,7 @@ const MOCK_DETAILS: Record<
     condition: "未使用に近い",
     story: "ディスプレイケース製作時に余ったアクリル板です。透明度が高く、看板制作やクラフトに使えます。",
     seller: "アクリルクラフトショップ",
-    images: [
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
-    ],
+    images: ["https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80"],
   },
 };
 
@@ -59,11 +43,7 @@ const DEFAULT_PRODUCT = {
   condition: "未使用",
   story: "サイズはバラバラですが、DIYや工作に使える木材の端材です。10枚セットでの販売です。",
   seller: "はざいち公式",
-  images: [
-    "https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
-  ],
+  images: ["https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80"],
 };
 
 const { width } = Dimensions.get("window");
@@ -101,10 +81,7 @@ export default function ProductDetailScreen() {
     <SafeAreaView style={styles.container}>
       {/* ヘッダー部分 */}
       <View style={styles.headerRow}>
-        <TouchableOpacity
-          style={styles.textBackButton}
-          onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}
-        >
+        <TouchableOpacity style={styles.textBackButton} onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}>
           <Ionicons name="arrow-back" size={18} color="#C47A4A" />
           <Text style={styles.textBackText}>戻る</Text>
         </TouchableOpacity>
@@ -112,11 +89,7 @@ export default function ProductDetailScreen() {
         <View style={styles.headerIcons}>
           {/* いいねボタン */}
           <TouchableOpacity style={styles.iconButton} onPress={() => setIsLiked(!isLiked)}>
-            <Ionicons
-              name={isLiked ? "heart" : "heart-outline"}
-              size={22}
-              color={isLiked ? "#E06D53" : "#5C4A3F"}
-            />
+            <Ionicons name={isLiked ? "heart" : "heart-outline"} size={22} color={isLiked ? "#E06D53" : "#5C4A3F"} />
           </TouchableOpacity>
 
           {/* 共有ボタン */}
@@ -129,13 +102,7 @@ export default function ProductDetailScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* 画像スライダー部分 */}
         <View style={styles.imageContainer}>
-          <ScrollView
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-          >
+          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
             {product.images.map((uri, index) => (
               <Image key={index} source={{ uri }} style={styles.mainImage} />
             ))}
@@ -185,7 +152,7 @@ export default function ProductDetailScreen() {
 
       {/* 画面下部の固定購入ボタン */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.buyButton}>
+        <TouchableOpacity style={styles.buyButton} onPress={() => router.push("/purchase-confirm")} activeOpacity={0.8}>
           <Text style={styles.buyButtonText}>購入手続きへ</Text>
         </TouchableOpacity>
       </View>
