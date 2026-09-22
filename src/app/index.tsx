@@ -1,98 +1,156 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+const { width } = Dimensions.get("window");
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+// カテゴリのダミーデータ
+const categories = [
+  { name: "木材", icon: "cube-outline" },
+  { name: "ガラス", icon: "file-tray-outline" },
+  { name: "布", icon: "shirt-outline" },
+  { name: "アクリル", icon: "layers-outline" },
+  { name: "皮", icon: "bookmark-outline" },
+  { name: "金属", icon: "hardware-chip-outline" },
+  { name: "紙", icon: "newspaper-outline" },
+  { name: "その他", icon: "apps-outline" },
+];
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* ヘッダー（通知アイコン） */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.notificationButton}>
+            <Ionicons name="notifications-outline" size={24} color="#2C221E" />
+          </TouchableOpacity>
+        </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        {/* 検索バー */}
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={18} color="#8C7A70" style={styles.searchIcon} />
+          <TextInput style={styles.searchInput} placeholder="キーワードで検索" placeholderTextColor="#8C7A70" />
+        </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        {/* バナー */}
+        <View style={styles.bannerContainer}>
+          <Image source={{ uri: "https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=800&q=80" }} style={styles.bannerImage} />
+          <View style={styles.bannerOverlay}>
+            <Text style={styles.bannerText}>使いきれなかった素材を{"\n"}必要としている誰かへ。</Text>
+          </View>
+        </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        {/* カテゴリ */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>カテゴリ</Text>
+          <View style={styles.categoryGrid}>
+            {categories.map((cat, index) => (
+              <TouchableOpacity key={index} style={styles.categoryItem}>
+                <View style={styles.categoryCircle}>
+                  <Ionicons name={cat.icon as any} size={24} color="#5C4A3F" />
+                </View>
+                <Text style={styles.categoryText}>{cat.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* 人気のはざい */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>人気のはざい</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+            {[1, 2, 3].map((item) => (
+              <TouchableOpacity key={item} style={styles.productCard} onPress={() => router.push("/product-detail")}>
+                <View style={styles.productImagePlaceholder} />
+                <Text style={styles.productCardTitle}>木材の端材セット {item}</Text>
+                <Text style={styles.productCardPrice}>¥300</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  container: { flex: 1, backgroundColor: "#FAF7F2" },
+  // 下部のタブ（ボトムタブ）と重ならないように十分な余白（paddingBottom: 120）を確保しています
+  scrollContent: { paddingBottom: 120 },
+  header: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+  notificationButton: {
+    padding: 6,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#EFECE6",
+    marginHorizontal: 16,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    height: 40,
+    marginBottom: 16,
   },
-  title: {
-    textAlign: 'center',
+  searchIcon: { marginRight: 8 },
+  searchInput: { flex: 1, fontSize: 14, color: "#2C221E" },
+  bannerContainer: {
+    marginHorizontal: 16,
+    height: 150,
+    borderRadius: 12,
+    overflow: "hidden",
+    marginBottom: 24,
+    position: "relative",
   },
-  code: {
-    textTransform: 'uppercase',
+  bannerImage: { width: "100%", height: "100%" },
+  bannerOverlay: {
+    ...StyleSheet.absoluteFill, // 正しい書き方
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+    justifyContent: "center",
+    paddingHorizontal: 16,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  bannerText: { color: "#FFF", fontSize: 16, fontWeight: "bold", lineHeight: 24 },
+  sectionContainer: { marginBottom: 24, paddingHorizontal: 16 },
+  sectionTitle: { fontSize: 16, fontWeight: "bold", color: "#2C221E", marginBottom: 12 },
+  categoryGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
+  categoryItem: {
+    width: "22%",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  categoryCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#EFECE6",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  categoryText: { fontSize: 12, color: "#5C4A3F", textAlign: "center" },
+  horizontalScroll: { marginHorizontal: -16, paddingHorizontal: 16 },
+  productCard: {
+    width: 140,
+    marginRight: 12,
+  },
+  productImagePlaceholder: {
+    width: 140,
+    height: 140,
+    backgroundColor: "#EFECE6",
+    borderRadius: 8,
+    marginBottom: 6,
+  },
+  productCardTitle: { fontSize: 13, color: "#2C221E", fontWeight: "500" },
+  productCardPrice: { fontSize: 14, color: "#C47A4A", fontWeight: "bold", marginTop: 2 },
 });
