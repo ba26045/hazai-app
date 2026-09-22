@@ -7,13 +7,10 @@ export default function PurchaseConfirmScreen() {
   const router = useRouter();
   const { title = "木材の端材 10枚セット", price = "300" } = useLocalSearchParams();
 
-  // 支払い方法や配送先のモック選択状態
-  const [paymentMethod, setPaymentMethod] = useState("クレジットカード (**** 1234)");
-  const [shippingAddress, setShippingAddress] = useState("東京都葛飾区新小岩 1-2-3");
+  const [paymentMethod] = useState("クレジットカード (**** 1234)");
+  const [shippingAddress] = useState("東京都葛飾区新小岩 1-2-3");
 
-  // 購入確定処理
   const handleComplete = () => {
-    // ここで実際の決済処理などのAPIを呼ぶ想定
     router.replace("/purchase-complete");
   };
 
@@ -27,11 +24,10 @@ export default function PurchaseConfirmScreen() {
           <Ionicons name="arrow-back" size={24} color="#5C4033" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>購入内容の確認</Text>
-        <View style={{ width: 24 }} /> {/* バランス用 */}
+        <View style={{ width: 24 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* 商品情報セクション */}
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>ご注文内容</Text>
           <View style={styles.productRow}>
@@ -44,7 +40,6 @@ export default function PurchaseConfirmScreen() {
           </View>
         </View>
 
-        {/* 配送先セクション */}
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>お届け先</Text>
@@ -58,7 +53,6 @@ export default function PurchaseConfirmScreen() {
           </View>
         </View>
 
-        {/* 支払い方法セクション */}
         <View style={styles.sectionCard}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>お支払い方法</Text>
@@ -72,7 +66,6 @@ export default function PurchaseConfirmScreen() {
           </View>
         </View>
 
-        {/* 料金内訳セクション */}
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>お支払い金額</Text>
           <View style={styles.priceRow}>
@@ -90,7 +83,6 @@ export default function PurchaseConfirmScreen() {
         </View>
       </ScrollView>
 
-      {/* フッター（購入確定ボタン） */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.confirmButton} onPress={handleComplete} activeOpacity={0.8}>
           <Text style={styles.confirmButtonText}>購入を確定する</Text>
@@ -101,10 +93,7 @@ export default function PurchaseConfirmScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FDFBF7",
-  },
+  container: { flex: 1, backgroundColor: "#FDFBF7" },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -115,18 +104,9 @@ const styles = StyleSheet.create({
     borderBottomColor: "#EFECE6",
     backgroundColor: "#FDFBF7",
   },
-  backButton: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#5C4033",
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 100,
-  },
+  backButton: { padding: 4 },
+  headerTitle: { fontSize: 16, fontWeight: "bold", color: "#5C4033" },
+  scrollContent: { padding: 16, paddingBottom: 100 },
   sectionCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
@@ -135,41 +115,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#F2EFE9",
   },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#5C4033",
-    marginBottom: 12,
-  },
-  sectionHeaderRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  changeText: {
-    fontSize: 12,
-    color: "#8C6D53",
-    fontWeight: "bold",
-  },
-  productRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  productInfo: {
-    flex: 1,
-  },
-  productName: {
-    fontSize: 15,
-    color: "#333333",
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  productPrice: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#8C6D53",
-  },
+  sectionTitle: { fontSize: 14, fontWeight: "bold", color: "#5C4033", marginBottom: 12 },
+  sectionHeaderRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
+  changeText: { fontSize: 12, color: "#8C6D53", fontWeight: "bold" },
+  productRow: { flexDirection: "row", alignItems: "center" },
+  productInfo: { flex: 1 },
+  productName: { fontSize: 15, color: "#333333", fontWeight: "600", marginBottom: 4 },
+  productPrice: { fontSize: 16, fontWeight: "bold", color: "#8C6D53" },
   infoBox: {
     flexDirection: "row",
     alignItems: "center",
@@ -179,43 +131,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#EFECE6",
   },
-  infoIcon: {
-    marginRight: 8,
-  },
-  infoText: {
-    fontSize: 13,
-    color: "#5C4033",
-  },
-  priceRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  priceLabel: {
-    fontSize: 13,
-    color: "#8C7A6B",
-  },
-  priceValue: {
-    fontSize: 13,
-    color: "#333333",
-  },
-  totalRow: {
-    borderTopWidth: 1,
-    borderTopColor: "#EFECE6",
-    paddingTop: 8,
-    marginTop: 4,
-    marginBottom: 0,
-  },
-  totalLabel: {
-    fontSize: 15,
-    fontWeight: "bold",
-    color: "#5C4033",
-  },
-  totalValue: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#8C6D53",
-  },
+  infoIcon: { marginRight: 8 },
+  infoText: { fontSize: 13, color: "#5C4033" },
+  priceRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
+  priceLabel: { fontSize: 13, color: "#8C7A6B" },
+  priceValue: { fontSize: 13, color: "#333333" },
+  totalRow: { borderTopWidth: 1, borderTopColor: "#EFECE6", paddingTop: 8, marginTop: 4, marginBottom: 0 },
+  totalLabel: { fontSize: 15, fontWeight: "bold", color: "#5C4033" },
+  totalValue: { fontSize: 18, fontWeight: "bold", color: "#8C6D53" },
   footer: {
     position: "absolute",
     bottom: 0,
@@ -232,9 +155,5 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     alignItems: "center",
   },
-  confirmButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
+  confirmButtonText: { color: "#FFFFFF", fontSize: 16, fontWeight: "bold" },
 });
