@@ -1,23 +1,57 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const { width } = Dimensions.get("window");
 
 // カテゴリのダミーデータ
 const categories = [
-  { name: "木材", icon: "cube-outline" },
-  { name: "ガラス", icon: "file-tray-outline" },
-  { name: "布", icon: "shirt-outline" },
-  { name: "アクリル", icon: "layers-outline" },
-  { name: "皮", icon: "bookmark-outline" },
-  { name: "金属", icon: "hardware-chip-outline" },
-  { name: "紙", icon: "newspaper-outline" },
-  { name: "その他", icon: "apps-outline" },
+  { id: "wood", name: "木材", icon: "cube-outline" },
+  { id: "glass", name: "ガラス", icon: "file-tray-outline" },
+  { id: "fabric", name: "布", icon: "shirt-outline" },
+  { id: "acrylic", name: "アクリル", icon: "layers-outline" },
+  { id: "leather", name: "皮", icon: "bookmark-outline" },
+  { id: "metal", name: "金属", icon: "hardware-chip-outline" },
+  { id: "paper", name: "紙", icon: "newspaper-outline" },
+  { id: "other", name: "その他", icon: "apps-outline" },
+];
+
+// 人気のはざい（モックデータ）
+const MOCK_PRODUCTS = [
+  {
+    id: "1",
+    title: "木材の端材 10枚セット",
+    price: 300,
+    imageUrl: "https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "2",
+    title: "アクリル板 端材詰め合わせ",
+    price: 500,
+    imageUrl: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: "3",
+    title: "革の端材カラフルハギレ",
+    price: 450,
+    imageUrl: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
+  },
 ];
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // カテゴリタップ時
+  const handleCategoryPress = (categoryId: string) => {
+    router.push({ pathname: "/search", params: { category: categoryId } });
+  };
+
+  // 商品カードタップ時（詳細画面へIDを渡す）
+  const handleProductPress = (id: string) => {
+    router.push({ pathname: "/product-detail", params: { id } });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,7 +66,18 @@ export default function HomeScreen() {
         {/* 検索バー */}
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={18} color="#8C7A70" style={styles.searchIcon} />
-          <TextInput style={styles.searchInput} placeholder="キーワードで検索" placeholderTextColor="#8C7A70" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="キーワードで検索"
+            placeholderTextColor="#8C7A70"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={() => {
+              if (searchQuery.trim()) {
+                router.push({ pathname: "/search", params: { q: searchQuery } });
+              }
+            }}
+          />
         </View>
 
         {/* バナー */}
@@ -47,8 +92,12 @@ export default function HomeScreen() {
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>カテゴリ</Text>
           <View style={styles.categoryGrid}>
-            {categories.map((cat, index) => (
-              <TouchableOpacity key={index} style={styles.categoryItem}>
+            {categories.map((cat) => (
+              <TouchableOpacity
+                key={cat.id}
+                style={styles.categoryItem}
+                onPress={() => handleCategoryPress(cat.id)}
+              >
                 <View style={styles.categoryCircle}>
                   <Ionicons name={cat.icon as any} size={24} color="#5C4A3F" />
                 </View>
@@ -62,11 +111,17 @@ export default function HomeScreen() {
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>人気のはざい</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-            {[1, 2, 3].map((item) => (
-              <TouchableOpacity key={item} style={styles.productCard} onPress={() => router.push("/product-detail")}>
-                <View style={styles.productImagePlaceholder} />
-                <Text style={styles.productCardTitle}>木材の端材セット {item}</Text>
-                <Text style={styles.productCardPrice}>¥300</Text>
+            {MOCK_PRODUCTS.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.productCard}
+                onPress={() => handleProductPress(item.id)}
+              >
+                <Image source={{ uri: item.imageUrl }} style={styles.productImage} />
+                <Text style={styles.productCardTitle} numberOfLines={2}>
+                  {item.title}
+                </Text>
+                <Text style={styles.productCardPrice}>¥{item.price.toLocaleString()}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -78,7 +133,6 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FAF7F2" },
-  // 下部のタブ（ボトムタブ）と重ならないように十分な余白（paddingBottom: 120）を確保しています
   scrollContent: { paddingBottom: 120 },
   header: {
     flexDirection: "row",
@@ -111,7 +165,7 @@ const styles = StyleSheet.create({
   },
   bannerImage: { width: "100%", height: "100%" },
   bannerOverlay: {
-    ...StyleSheet.absoluteFill, // 正しい書き方
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0.35)",
     justifyContent: "center",
     paddingHorizontal: 16,
@@ -144,12 +198,12 @@ const styles = StyleSheet.create({
     width: 140,
     marginRight: 12,
   },
-  productImagePlaceholder: {
+  productImage: {
     width: 140,
     height: 140,
-    backgroundColor: "#EFECE6",
     borderRadius: 8,
     marginBottom: 6,
+    backgroundColor: "#EFECE6",
   },
   productCardTitle: { fontSize: 13, color: "#2C221E", fontWeight: "500" },
   productCardPrice: { fontSize: 14, color: "#C47A4A", fontWeight: "bold", marginTop: 2 },

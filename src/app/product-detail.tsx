@@ -1,54 +1,126 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-// 画像スライダー用のダミーデータ（5枚）
-const images = [
-  "https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
-];
+// 商品データのモック（IDごとの表示用）
+const MOCK_DETAILS: Record<
+  string,
+  {
+    title: string;
+    price: number;
+    material: string;
+    condition: string;
+    story: string;
+    seller: string;
+    images: string[];
+  }
+> = {
+  "1": {
+    title: "木材の端材 10枚セット",
+    price: 300,
+    material: "木材",
+    condition: "未使用",
+    story: "家具製作の過程で出た高品質なオーク材の端材です。サイズは不揃いですが、小物作りやDIYに最適です。",
+    seller: "木工工房 タナカ",
+    images: [
+      "https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+  "2": {
+    title: "アクリル板 端材詰め合わせ",
+    price: 500,
+    material: "アクリル",
+    condition: "未使用に近い",
+    story: "ディスプレイケース製作時に余ったアクリル板です。透明度が高く、看板制作やクラフトに使えます。",
+    seller: "アクリルクラフトショップ",
+    images: [
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
+    ],
+  },
+};
+
+const DEFAULT_PRODUCT = {
+  title: "木材の端材 10枚セット",
+  price: 300,
+  material: "木材",
+  condition: "未使用",
+  story: "サイズはバラバラですが、DIYや工作に使える木材の端材です。10枚セットでの販売です。",
+  seller: "はざいち公式",
+  images: [
+    "https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80",
+  ],
+};
 
 const { width } = Dimensions.get("window");
 
 export default function ProductDetailScreen() {
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id?: string }>();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(false); // いいねの状態管理
+  const [isLiked, setIsLiked] = useState(false);
 
+  // IDに応じたデータまたはデフォルトデータ
+  const product = id && MOCK_DETAILS[id] ? MOCK_DETAILS[id] : DEFAULT_PRODUCT;
+
+  // スライダーのスクロール判定
   const handleScroll = (event: any) => {
     const slideSize = event.nativeEvent.layoutMeasurement.width;
-    const index = Math.floor(event.nativeEvent.contentOffset.x / slideSize);
-    if (!isNaN(index)) {
+    if (slideSize > 0) {
+      const index = Math.round(event.nativeEvent.contentOffset.x / slideSize);
       setActiveImageIndex(index);
+    }
+  };
+
+  // 共有機能
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `【はざいち】${product.title} - ¥${product.price.toLocaleString()}\n端材を活用しよう！`,
+      });
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* ヘッダー部分（戻るボタン ＋ 右側の「いいね」「共有」ボタン） */}
+      {/* ヘッダー部分 */}
       <View style={styles.headerRow}>
-        <TouchableOpacity style={styles.textBackButton} onPress={() => router.replace("/")}>
+        <TouchableOpacity
+          style={styles.textBackButton}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}
+        >
           <Ionicons name="arrow-back" size={18} color="#C47A4A" />
-          <Text style={styles.textBackText}>ホームに戻る</Text>
+          <Text style={styles.textBackText}>戻る</Text>
         </TouchableOpacity>
 
         <View style={styles.headerIcons}>
           {/* いいねボタン */}
           <TouchableOpacity style={styles.iconButton} onPress={() => setIsLiked(!isLiked)}>
-            <Ionicons name={isLiked ? "heart" : "heart-outline"} size={22} color={isLiked ? "#E06D53" : "#5C4A3F"} />
+            <Ionicons
+              name={isLiked ? "heart" : "heart-outline"}
+              size={22}
+              color={isLiked ? "#E06D53" : "#5C4A3F"}
+            />
           </TouchableOpacity>
 
           {/* 共有ボタン */}
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => {
-              // 共有処理をここに記述できます
-            }}
-          >
+          <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
             <Ionicons name="share-outline" size={22} color="#5C4A3F" />
           </TouchableOpacity>
         </View>
@@ -57,15 +129,21 @@ export default function ProductDetailScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* 画像スライダー部分 */}
         <View style={styles.imageContainer}>
-          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
-            {images.map((uri, index) => (
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+          >
+            {product.images.map((uri, index) => (
               <Image key={index} source={{ uri }} style={styles.mainImage} />
             ))}
           </ScrollView>
 
           {/* ドットインジケーター */}
           <View style={styles.pagination}>
-            {images.map((_, index) => (
+            {product.images.map((_, index) => (
               <View key={index} style={[styles.dot, activeImageIndex === index && styles.activeDot]} />
             ))}
           </View>
@@ -73,21 +151,34 @@ export default function ProductDetailScreen() {
 
         {/* 商品情報セクション */}
         <View style={styles.infoContainer}>
-          <Text style={styles.title}>木材の端材 10枚セット</Text>
-          <Text style={styles.price}>¥300</Text>
+          <Text style={styles.title}>{product.title}</Text>
+          <Text style={styles.price}>¥{product.price.toLocaleString()}</Text>
 
           <View style={styles.tagRow}>
             <View style={styles.tag}>
-              <Text style={styles.tagText}>素材: 木材</Text>
+              <Text style={styles.tagText}>素材: {product.material}</Text>
             </View>
             <View style={styles.tag}>
-              <Text style={styles.tagText}>状態: 未使用</Text>
+              <Text style={styles.tagText}>状態: {product.condition}</Text>
             </View>
           </View>
 
+          {/* 「なぜ端材になった？」ストーリーカード */}
           <View style={styles.storyCard}>
-            <Text style={styles.storyTitle}>商品の説明</Text>
-            <Text style={styles.storyText}>サイズはバラバラですが、DIYや工作に使える木材の端材です。10枚セットでの販売です。</Text>
+            <View style={styles.storyHeader}>
+              <Ionicons name="leaf-outline" size={16} color="#C47A4A" style={{ marginRight: 6 }} />
+              <Text style={styles.storyTitle}>なぜ端材になった？（商品の背景）</Text>
+            </View>
+            <Text style={styles.storyText}>{product.story}</Text>
+          </View>
+
+          {/* 出品者情報 */}
+          <View style={styles.sellerSection}>
+            <Ionicons name="person-circle-outline" size={32} color="#8C7A70" />
+            <View style={styles.sellerInfo}>
+              <Text style={styles.sellerLabel}>出品者</Text>
+              <Text style={styles.sellerName}>{product.seller}</Text>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -95,7 +186,7 @@ export default function ProductDetailScreen() {
       {/* 画面下部の固定購入ボタン */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.buyButton}>
-          <Text style={styles.buyButtonText}>購入する</Text>
+          <Text style={styles.buyButtonText}>購入手続きへ</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -138,8 +229,13 @@ const styles = StyleSheet.create({
   tag: { backgroundColor: "#F0E6D8", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, marginRight: 8, marginBottom: 8 },
   tagText: { fontSize: 12, fontWeight: "500", color: "#5C4A3F" },
   storyCard: { backgroundColor: "#F5EFEB", borderLeftWidth: 3, borderLeftColor: "#C47A4A", padding: 16, borderRadius: 8, marginVertical: 16 },
-  storyTitle: { fontSize: 13, color: "#C47A4A", fontWeight: "700", marginBottom: 6 },
+  storyHeader: { flexDirection: "row", alignItems: "center", marginBottom: 6 },
+  storyTitle: { fontSize: 13, color: "#C47A4A", fontWeight: "700" },
   storyText: { fontSize: 14, color: "#4A3B32", lineHeight: 22 },
+  sellerSection: { flexDirection: "row", alignItems: "center", backgroundColor: "#EFECE6", padding: 12, borderRadius: 8, marginTop: 8 },
+  sellerInfo: { marginLeft: 10 },
+  sellerLabel: { fontSize: 10, color: "#8C7A70" },
+  sellerName: { fontSize: 14, fontWeight: "600", color: "#2C221E" },
   footer: { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "#FFF", padding: 16, borderTopWidth: 1, borderTopColor: "#E2D5C9" },
   buyButton: { backgroundColor: "#A85E32", padding: 16, borderRadius: 24, alignItems: "center" },
   buyButtonText: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
