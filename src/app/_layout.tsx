@@ -79,6 +79,24 @@ export default function TabLayout() {
           href: null, // タブバーから完全に消す
         }}
       />
+      <Tabs.Screen
+        name="chat/[id]"
+        options={{
+          href: null, // これによりタブバーから消えます
+        }}
+      />
+      <Tabs.Screen
+        name="purchase-complete"
+        options={{
+          href: null, // これによりタブバーから消えます
+        }}
+      />
+      <Tabs.Screen
+        name="purchase-confirm"
+        options={{
+          href: null, // これによりタブバーから消えます
+        }}
+      />
     </Tabs>
   );
 }
