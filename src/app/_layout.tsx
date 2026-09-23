@@ -1,6 +1,36 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { Image, ImageSourcePropType, StyleSheet } from "react-native";
+
+// フッターのタブアイコン（active: 選択中 / inactive: 未選択）
+const tabIcons = {
+  home: {
+    active: require("@/assets/images/tabIcons/footer/home.png"),
+    inactive: require("@/assets/images/tabIcons/footer/home_gry.png"),
+  },
+  cart: {
+    active: require("@/assets/images/tabIcons/footer/cart.png"),
+    inactive: require("@/assets/images/tabIcons/footer/cart_gry.png"),
+  },
+  gallery: {
+    active: require("@/assets/images/tabIcons/footer/garary.png"),
+    inactive: require("@/assets/images/tabIcons/footer/garary_gry.png"),
+  },
+  // マイページだけファイル名が逆（my.png がグレー、my_kuro.png が黒）
+  mypage: {
+    active: require("@/assets/images/tabIcons/footer/my_kuro.png"),
+    inactive: require("@/assets/images/tabIcons/footer/my.png"),
+  },
+};
+
+function TabIcon({
+  source,
+  size,
+}: {
+  source: ImageSourcePropType;
+  size: { width: number; height: number };
+}) {
+  return <Image source={source} style={size} resizeMode="contain" />;
+}
 
 export default function TabLayout() {
   return (
@@ -9,7 +39,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: "#2C221E",
-        tabBarInactiveTintColor: "#8C7A70",
+        tabBarInactiveTintColor: "#9A9A9A",
         tabBarShowLabel: true,
         tabBarLabelStyle: styles.tabBarLabel,
       }}
@@ -19,54 +49,77 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "ホーム",
-          tabBarIcon: ({ focused, color }) => <Ionicons name={focused ? "home" : "home-outline"} size={24} color={color} />,
+          tabBarIcon: ({ focused }) => (
+            // home.png は余白が大きいため、他より大きめに表示して見た目のサイズを揃える
+            <TabIcon
+              source={focused ? tabIcons.home.active : tabIcons.home.inactive}
+              size={styles.homeIcon}
+            />
+          ),
         }}
       />
 
-      {/* 2. 探す */}
+      {/* 2. かう */}
       <Tabs.Screen
         name="search"
         options={{
-          title: "探す",
-          tabBarIcon: ({ focused, color }) => <Ionicons name={focused ? "search" : "search-outline"} size={24} color={color} />,
-        }}
-      />
-
-      {/* 3. 投稿（中央の＋ボタン風） */}
-      <Tabs.Screen
-        name="post"
-        options={{
-          title: "投稿",
-          tabBarIcon: () => (
-            <View style={styles.postButton}>
-              <Ionicons name="add" size={28} color="#FFF" />
-            </View>
+          title: "かう",
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              source={focused ? tabIcons.cart.active : tabIcons.cart.inactive}
+              size={styles.cartIcon}
+            />
           ),
-          tabBarLabelStyle: { marginTop: 4, fontSize: 10, color: "#8C7A70" },
         }}
       />
 
-      {/* 4. メッセージ */}
+      {/* 3. ギャラリー */}
       <Tabs.Screen
-        name="message"
+        name="gallery"
         options={{
-          title: "メッセージ",
-          tabBarIcon: ({ focused, color }) => <Ionicons name={focused ? "chatbubble" : "chatbubble-outline"} size={24} color={color} />,
+          title: "ギャラリー",
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              source={
+                focused ? tabIcons.gallery.active : tabIcons.gallery.inactive
+              }
+              size={styles.galleryIcon}
+            />
+          ),
         }}
       />
 
-      {/* 5. マイページ */}
+      {/* 4. マイページ */}
       <Tabs.Screen
         name="mypage"
         options={{
           title: "マイページ",
-          tabBarIcon: ({ focused, color }) => <Ionicons name={focused ? "person" : "person-outline"} size={24} color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              source={
+                focused ? tabIcons.mypage.active : tabIcons.mypage.inactive
+              }
+              size={styles.mypageIcon}
+            />
+          ),
         }}
       />
 
       {/* ==========================================
-          余分に出てきた「explore」と「product」を非表示にする設定
+          タブバーに表示しない画面
           ========================================== */}
+      <Tabs.Screen
+        name="post"
+        options={{
+          href: null, // これによりタブバーから消えます
+        }}
+      />
+      <Tabs.Screen
+        name="message"
+        options={{
+          href: null, // これによりタブバーから消えます
+        }}
+      />
       <Tabs.Screen
         name="explore"
         options={{
@@ -97,30 +150,30 @@ export default function TabLayout() {
           href: null, // これによりタブバーから消えます
         }}
       />
+      <Tabs.Screen
+        name="post/[id]"
+        options={{
+          href: null, // これによりタブバーから消えます
+        }}
+      />
     </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: "#FAF7F2",
+    backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: "#EFECE6",
-    height: 60,
-    paddingBottom: 8,
-    paddingTop: 6,
+    borderTopColor: "#DDDDDD",
+    paddingTop: 8,
   },
   tabBarLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: "500",
+    marginTop: 4,
   },
-  postButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#2C221E",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 4,
-  },
+  homeIcon: { width: 40, height: 40 },
+  cartIcon: { width: 28, height: 28 },
+  galleryIcon: { width: 24, height: 27 },
+  mypageIcon: { width: 22, height: 22 },
 });
