@@ -1,6 +1,4 @@
-import { MaterialItem } from '@/types'; // 型定義のファイルパスを指定
-
-export const MOCK_PRODUCTS: MaterialItem[] = [
+export const MOCK_PRODUCTS = [
     {
         id: '1',
         title: '木材の端材 10枚セット',

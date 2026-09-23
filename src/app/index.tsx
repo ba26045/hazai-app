@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   bannerImage: { width: "100%", height: "100%" },
   bannerOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(0, 0, 0, 0.35)",
     justifyContent: "center",
     paddingHorizontal: 16,
